@@ -1,0 +1,27 @@
+{
+  "name": "among-us-cock-bot",
+  "version": "1.0.0",
+  "description": "Among Us Cock Bot",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "AmongUsCockBot lol"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nlanson/AUCB.git"
+  },
+  "author": "u/keijyu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nlanson/AUCB/issues"
+  },
+  "homepage": "https://github.com/nlanson/AUCB#readme",
+  "dependencies": {
+    "@types/snoowrap": "^1.19.0",
+    "snoostorm": "^1.5.2",
+    "snoowrap": "^1.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37"
+  }
+}

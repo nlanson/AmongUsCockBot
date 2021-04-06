@@ -1,0 +1,6 @@
+#ignore all options
+credentials.*
+
+dist/**
+
+node_modules/

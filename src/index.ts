@@ -17,8 +17,12 @@ class Bot {
         this.counter = 0;
     }
 
-    async goCockBot() {
-        console.log(`Starting AmongUsCockBot`);
+    //Main CockBot Method
+    async AutoCocksRoll() {
+        console.log(`Starting AmongUsCockBot... (Command Mode)`);
+        //this.swInboxMentions();
+        this.newInboxStream();
+
 
         //Loop to create subsequent submission streams.
         // while (true) {
@@ -30,6 +34,51 @@ class Bot {
             Set RSS and remeber latest post.
             Fetch RSS every 10 seconds and if the latest post has changed, do a loop to count how many new posts there are and for each post, do the COCK reply
         */
+    }
+
+    
+    //Inbox stream method.
+    //Will send cock to ever username mention BUT will send a cock to every historical username mention as well.
+    async newInboxStream() {
+        return new Promise((resolve) => {
+            const inbox = new InboxStream(this.bot);
+
+            inbox.on('item', (item) => {
+                console.log(`Item Received: ${item.name}`);
+                console.log(`    - ${item.body}`);
+                
+                //On Mention
+                if (item.body == `u/AmongUsCockBot`) {
+                    //Perform check to see if commend is unread or not.
+                    
+                    
+                    console.log('    - Sending Cock...');
+                    item.reply(cockString);
+                    this.bot.markMessagesAsRead([item.name]); //mark message as read
+                    console.log(`    - Fulfilled and marked as read.`)
+                }
+
+                //EMERGENCY STOP
+                if( item.body == `!forcestop` ) {
+                    console.log(`    - Force End.`);
+                    this.bot.markMessagesAsRead([item.name]); //mark message as read
+                    inbox.end(); //Fire end event.
+                    console.log(`    - Successfully Closed.`);
+                }
+            });
+
+            inbox.on('end', () => {
+                resolve('End');
+            })
+        })
+    }
+
+    //Inbox Mention SnooWrap Method
+    async swInboxMentions() {
+        let inbox = this.bot.getInbox().then(() => {
+            console.log('Inbox Loaded');
+            console.log(inbox);
+        });
     }
 
     //Creates a post in r/copypasta with the amongus cock
@@ -81,4 +130,4 @@ class Bot {
 
 
 let cockBot = new Bot(r);
-cockBot.goCockBot();
+cockBot.AutoCocksRoll();

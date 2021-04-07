@@ -10,17 +10,15 @@ const cockString: string = '⠀⠀‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎�
 
 class Bot {
     bot: Snoowrap;
-    counter: number; //Counts how many comments have been made.
+    startTime: number = Date.now()/1000;
     
     constructor(r: Snoowrap) {
         this.bot = r;
-        this.counter = 0;
     }
 
     //Main CockBot Method
     async AutoCocksRoll() {
-        console.log(`Starting AmongUsCockBot... (Command Mode)`);
-        //this.swInboxMentions();
+        console.log(`Starting AmongUsCockBot... (Mention Mode)`);
         this.newInboxStream();
 
 
@@ -28,57 +26,34 @@ class Bot {
         // while (true) {
         //     await this.newSubmissionStream('copypasta', 100)
         // }
-
-        //Try RSS Approach
-        /*
-            Set RSS and remeber latest post.
-            Fetch RSS every 10 seconds and if the latest post has changed, do a loop to count how many new posts there are and for each post, do the COCK reply
-        */
     }
 
     
-    //Inbox stream method.
-    //Will send cock to ever username mention BUT will send a cock to every historical username mention as well.
+    //Will send cock to every username mention.
     async newInboxStream() {
-        return new Promise((resolve) => {
+        return new Promise( ( resolve ) => {
             const inbox = new InboxStream(this.bot);
 
-            inbox.on('item', (item) => {
-                console.log(`Item Received: ${item.name}`);
-                console.log(`    - ${item.body}`);
+            inbox.on( 'item', (item) => {
+                let filter = item.body.toLowerCase();
                 
                 //On Mention
-                if (item.body == `u/AmongUsCockBot`) {
-                    //Perform check to see if commend is unread or not.
-                    
-                    
-                    console.log('    - Sending Cock...');
-                    item.reply(cockString);
-                    this.bot.markMessagesAsRead([item.name]); //mark message as read
-                    console.log(`    - Fulfilled and marked as read.`)
-                }
-
-                //EMERGENCY STOP
-                if( item.body == `!forcestop` ) {
-                    console.log(`    - Force End.`);
-                    this.bot.markMessagesAsRead([item.name]); //mark message as read
-                    inbox.end(); //Fire end event.
-                    console.log(`    - Successfully Closed.`);
+                if ( filter == `u/amonguscockbot` ) {
+                    //If the message was received after start time, send the cock.
+                    if(item.created_utc >= this.startTime) {
+                        console.log(`Item Received: ${item.name}`);
+                        console.log(`    - ${item.body}`);
+                        console.log('    - Sending Cock...');
+                        item.reply(cockString);
+                        console.log(`    - Fulfilled.`);
+                    }
                 }
             });
 
-            inbox.on('end', () => {
+            inbox.on( 'end', () => {
                 resolve('End');
-            })
+            });
         })
-    }
-
-    //Inbox Mention SnooWrap Method
-    async swInboxMentions() {
-        let inbox = this.bot.getInbox().then(() => {
-            console.log('Inbox Loaded');
-            console.log(inbox);
-        });
     }
 
     //Creates a post in r/copypasta with the amongus cock
@@ -94,7 +69,10 @@ class Bot {
 
     //Submission Stream
     /*
-        DOESNT WORK AS INTENDED
+        DOESNT WORK YET
+        
+        Currently it will reply to new submissions but since every new submission has a creation
+        time newer than the bot start time it will endlessly send the cock to every new submission.
     */
     newSubmissionStream( subreddit: string, limit: number ) {
         return new Promise((resolve) => { 
@@ -104,25 +82,28 @@ class Bot {
                 subreddit: subreddit,
                 limit: limit,
                 pollTime: 10000,
-              });
+            });
 
-              submissions.on("item", (item) => {
+            submissions.on( "item", ( item ) => {
                 i++; //Increment counter on new submission for the limit reseter.
-                this.counter++; //Increments counter to display how many cock comments have been made.
+                if ( item.created_utc >= this.startTime ) {
+                    console.log(`New Submission: ${item.title}`);
+                    console.log('    - Sending Cock...');
+                    //item.reply(cockString);
+                    console.log(`    - Fulfilled.`);
+                }
 
-                item.reply(cockString); //Reply with cock string.
-                console.log(`Comment #${i}`); //Log.
-                
+                //Limit checker to resolve the stream and recall.
                 //If the limit has been reached, fire the end event.
-                if(i == limit) {
+                if ( i == limit ) {
                     submissions.end();
                 }
-              });
+            });
 
-              //Resolve on end.
-              submissions.on('end', () => {
-                  resolve(i);
-              });
+            //Resolve on end.
+            submissions.on('end', () => {
+                resolve(i);
+            });
         });
     }
 

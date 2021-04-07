@@ -76,7 +76,7 @@ class Bot {
     */
     newSubmissionStream( subreddit: string, limit: number ) {
         return new Promise((resolve) => { 
-            let i = 0; //Var for the limit resetter. When i == limit the promise will resolve itself.
+            let i: number = 0; //Var for the limit resetter. When i == limit the promise will resolve itself.
             
             const submissions = new SubmissionStream(this.bot, { //Create new submission stream.
                 subreddit: subreddit,
@@ -110,5 +110,5 @@ class Bot {
 }
 
 
-let cockBot = new Bot(r);
+let cockBot: Bot = new Bot(r);
 cockBot.AutoCocksRoll();

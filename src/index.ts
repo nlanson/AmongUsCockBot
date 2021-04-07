@@ -35,13 +35,13 @@ class Bot {
             const inbox = new InboxStream(this.bot);
 
             inbox.on( 'item', (item) => {
-                let filter = item.body.toLowerCase();
+                let itemText = item.body.toLowerCase();
                 
                 //On Mention
-                if ( filter == `u/amonguscockbot` ) {
+                if ( itemText.includes('u/amonguscockbot') ) {
                     //If the message was received after start time, send the cock.
                     if(item.created_utc >= this.startTime) {
-                        console.log(`Item Received: ${item.name}`);
+                        console.log(`Cock requested on r/${item.subreddit.display_name}`);
                         console.log(`    - ${item.body}`);
                         console.log('    - Sending Cock...');
                         item.reply(cockString);

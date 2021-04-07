@@ -7,7 +7,6 @@ import { botCredentials, cockList } from './bot.interfaces';
 const creds: botCredentials = require("./credentials.json");
 const c: cockList = require("./cocks.json");
 const r: Snoowrap = new Snoowrap(creds);
-const cockString: string = '⠀⠀‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎ ‎‎‎‎‎⠀⣠⣤⣤⣤⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⠀⢰⡿⠋⠁⠀⠀⠈⠉⠙⠻⣷⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⢀⣿⠇⠀⢀⣴⣶⡾⠿⠿⠿⢿⣿⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⣀⣀⣸⡿⠀⠀⢸⣿⣇⠀⠀⠀⠀⠀⠀⠙⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀ ⠀⣾⡟⠛⣿⡇⠀⠀⢸⣿⣿⣷⣤⣤⣤⣤⣶⣶⣿⠇⠀⠀⠀⠀⠀⠀⠀⣀⠀⠀ ⢀⣿⠀⢀⣿⡇⠀⠀⠀⠻⢿⣿⣿⣿⣿⣿⠿⣿⡏⠀⠀⠀⠀⢴⣶⣶⣿⣿⣿⣆ ⢸⣿⠀⢸⣿⡇⠀⠀⠀⠀⠀⠈⠉⠁⠀⠀⠀⣿⡇⣀⣠⣴⣾⣮⣝⠿⠿⠿⣻⡟ ⢸⣿⠀⠘⣿⡇⠀⠀⠀⠀⠀⠀⠀⣠⣶⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠁⠉⠀ ⠸⣿⠀⠀⣿⡇⠀⠀⠀⠀⠀⣠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠟⠉⠀⠀⠀⠀ ⠀⠻⣷⣶⣿⣇⠀⠀⠀⢠⣼⣿⣿⣿⣿⣿⣿⣿⣛⣛⣻⠉⠁⠀⠀⠀⠀⠀⠀⠀ ⠀⠀⠀⠀⢸⣿⠀⠀⠀⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀ ⠀⠀ ⠀⠀⠀⠀⢸⣿⣀⣀⣀⣼⡿⢿⣿⣿⣿⣿⣿⡿⣿⣿⣿';
 
 class Bot {
     bot: Snoowrap;
@@ -39,14 +38,38 @@ class Bot {
                 let itemText = item.body.toLowerCase();
                 
                 //On Mention
-                if ( itemText.includes('u/amonguscockbot') ) {
-                    //If the message was received after start time, send the cock.
+                if ( itemText.includes('u/amonguscockbot random') ) {
+                    //Time check to not send a cock to every historical mention.
                     if(item.created_utc >= this.startTime) {
                         console.log(`Cock requested on r/${item.subreddit.display_name}`);
                         console.log(`    - ${item.body}`);
-                        console.log('    - Sending Cock...');
-                        item.reply(c.cocks[0]);
-                        console.log(`    - Fulfilled.`);
+                        
+                        let selection: number = Math.floor(Math.random() * 3);
+                        console.log(`    - Sending Cock #${selection+1}`);
+                        item.reply(c.cocks[selection])
+                        .then(() => {
+                            console.log(`    - Fulfilled`);
+                        })
+                        .catch((res: any) => {
+                            let e: any = JSON.parse(JSON.stringify(res));
+
+                            if ( e.error ) {
+                                //Check error reason and send PM if bot is banned from subreddit.
+                                if ( e.error.message == 'Forbidden' ) {
+                                    console.log(`    - Delivery failed as bot is banned from r/${item.subreddit.display_name}. Sending PM instead...`);
+                                    //Send PM with Cock.
+                                    this.bot.composeMessage({
+                                        to: item.author,
+                                        subject: "AmongUsCock",
+                                        text: c.cocks[selection]
+                                    })
+                                    .then(() => console.log(`    - PM Delivered.`))
+                                    .catch((e) => console.log(`    - PM Failed.`));
+                                } else {
+                                    console.log(`    - Delivery Failed.`);
+                                }
+                            }
+                        });
                     }
                 }
             });
@@ -62,7 +85,7 @@ class Bot {
         r.submitSelfpost({
             subredditName: 'copypasta',
             title: title,
-            text: cockString
+            text: c.cocks[0]
         }).then(() => {
             console.log('Posted');
         });

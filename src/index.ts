@@ -18,14 +18,8 @@ class Bot {
 
     //Main CockBot Method
     async AutoCocksRoll() {
-        console.log(`Starting AmongUsCockBot... (Mention Mode)`);
+        console.log(`Starting AmongUsCockBot...`);
         this.newInboxStream();
-
-
-        //Loop to create subsequent submission streams.
-        // while (true) {
-        //     await this.newSubmissionStream('copypasta', 100)
-        // }
     }
 
     
@@ -88,46 +82,6 @@ class Bot {
             text: c.cocks[0]
         }).then(() => {
             console.log('Posted');
-        });
-    }
-
-    //Submission Stream
-    /*
-        DOESNT WORK YET
-        
-        Currently it will reply to new submissions but since every new submission has a creation
-        time newer than the bot start time it will endlessly send the cock to every new submission.
-    */
-    newSubmissionStream( subreddit: string, limit: number ) {
-        return new Promise((resolve) => { 
-            let i: number = 0; //Var for the limit resetter. When i == limit the promise will resolve itself.
-            
-            const submissions = new SubmissionStream(this.bot, { //Create new submission stream.
-                subreddit: subreddit,
-                limit: limit,
-                pollTime: 10000,
-            });
-
-            submissions.on( "item", ( item ) => {
-                i++; //Increment counter on new submission for the limit reseter.
-                if ( item.created_utc >= this.startTime ) {
-                    console.log(`New Submission: ${item.title}`);
-                    console.log('    - Sending Cock...');
-                    //item.reply(cockString);
-                    console.log(`    - Fulfilled.`);
-                }
-
-                //Limit checker to resolve the stream and recall.
-                //If the limit has been reached, fire the end event.
-                if ( i == limit ) {
-                    submissions.end();
-                }
-            });
-
-            //Resolve on end.
-            submissions.on('end', () => {
-                resolve(i);
-            });
         });
     }
 

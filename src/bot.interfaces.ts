@@ -5,3 +5,7 @@ export interface botCredentials {
     username: string;
     password: string;
 };
+
+export interface cockList {
+    cocks: Array<string>;
+};

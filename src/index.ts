@@ -17,14 +17,14 @@ class Bot {
     }
 
     //Main CockBot Method
-    async AutoCocksRoll() {
+    public async AutoCocksRoll() {
         console.log(`Starting AmongUsCockBot...`);
         this.newInboxStream();
     }
 
     
     //Will send cock to every username mention.
-    async newInboxStream() {
+    private async newInboxStream() {
         return new Promise( ( resolve ) => {
             const inbox = new InboxStream(this.bot);
 
@@ -75,7 +75,7 @@ class Bot {
     }
 
     //Creates a post in r/copypasta with the amongus cock
-    postCock(title: string) {
+    public postCock(title: string) {
         r.submitSelfpost({
             subredditName: 'copypasta',
             title: title,

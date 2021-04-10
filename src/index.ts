@@ -1,6 +1,6 @@
 //Packages
 import Snoowrap from 'snoowrap';
-import { InboxStream, CommentStream, SubmissionStream } from "snoostorm";
+import { InboxStream } from "snoostorm";
 import { botCredentials, cockList } from './bot.interfaces'; 
 
 //Options

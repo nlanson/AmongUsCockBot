@@ -1,3 +1,4 @@
+# Amogus Cock Bot
 <p align='center'>
 <img src='https://img.shields.io/github/issues/nlanson/AmongUsCockBot'>
 <img src='https://img.shields.io/github/forks/nlanson/AmongUsCockBot'>

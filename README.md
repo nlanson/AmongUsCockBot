@@ -24,3 +24,4 @@ The container will not be made public for security reasons.
 3. The bot posts [dev log [0]](https://www.reddit.com/r/copypasta/comments/mlbf5y/amongus_cock_bot_dev_log0/) marking the beginning of it's service.
 4. [Celebration post](https://www.reddit.com/r/copypasta/comments/mlru3x/we_did_it_guys_amonguscockbot_celebration/) is submitted onto [r/copypasta](https://reddit.com/r/copypasta) celebrating the birth of the bot.
 5. Commit [#d2b0299](https://github.com/nlanson/AmongUsCockBot/commit/d2b0299ac415c0e762527f299eefe34bf1efbac9) sees the beginning of the bot being able to PM users when it is requested in a subreddit it is banned in.
+6. Thanks to [@Lachcim](https://github.com/Lachcim) for pointing out that on screens wider than 850px the ASCII art is distorted, and contributing to the bot to fix this issue! The changes made by [@Lachcim](https://github.com/Lachcim) was merged into the Main branch and put into production on 20/4/21.

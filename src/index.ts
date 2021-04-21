@@ -32,7 +32,7 @@ class Bot {
                 let itemText = item.body.toLowerCase();
                 
                 //On Mention
-                if ( itemText.includes('u/amonguscockbot') && itemText.includes('$test') ) {
+                if ( itemText.includes('u/amonguscockbot') ) {
                     //Time check to not send a cock to every historical mention.
                     if(item.created_utc >= this.startTime) {
                         console.log(`Cock requested on r/${item.subreddit.display_name}`);

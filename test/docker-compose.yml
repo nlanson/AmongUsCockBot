@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+  bot:
+    image: nlanson/bot-republic:test
+    environment:
+      - "username="
+      - "password="
+      - "userAgent="
+      - "clientId="
+      - "clientSecret="
+    container_name: bot
+    stdin_open: true
+    

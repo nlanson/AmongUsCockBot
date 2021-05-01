@@ -4,9 +4,36 @@ import { InboxStream } from "snoostorm";
 import { botCredentials, cockList } from './bot.interfaces'; 
 
 //Options
-const creds: botCredentials = require("./credentials.json");
+let creds: botCredentials;
+//Determine whether to use ENV defined BotAccount or fallback account
+if (
+    process.env.username &&
+    process.env.password &&
+    process.env.userAgent &&
+    process.env.clientId &&
+    process.env.clientSecret
+) {
+    console.log('Environment Creds Detected');
+    creds = {
+        username: process.env.username,
+        password: process.env.password,
+        userAgent: process.env.userAgent,
+        clientId: process.env.clientId,
+        clientSecret:process.env.clientSecret
+    };
+} else {
+    console.log(`Environment Creds are not specified. Using backup...`);
+    creds = require("./credentials.json"); //Backup credentials
+}
+
+console.log(creds);
 const c: cockList = require("./cocks.json");
 const r: Snoowrap = new Snoowrap(creds);
+//List of subreddits the bot is allowed to post in.
+const allowedSubreddits: Array<string> = [
+    "copypasta",
+    "amogus"
+];
 
 class Bot {
     bot: Snoowrap;
@@ -32,13 +59,21 @@ class Bot {
                 let itemText = item.body.toLowerCase();
                 
                 //On Mention
-                if ( itemText.includes('u/amonguscockbot') ) {
-                    //Time check to not send a cock to every historical mention.
-                    if(item.created_utc >= this.startTime) {
+                if ( itemText.includes('u/'+creds.username.toLowerCase()) ) {
+                    //Check if bot can send to this subreddit
+                    let send: boolean = false;
+                    for(let i=0; i<allowedSubreddits.length; i++) {
+                        if (item.subreddit.display_name.toLowerCase() == allowedSubreddits[i]){
+                            send = true
+                        }
+                    }
+                    
+                    //Time check and send check
+                    if( item.created_utc >= this.startTime && send == true) { 
                         console.log(`Cock requested on r/${item.subreddit.display_name}`);
                         console.log(`    - ${item.body}`);
                         
-                        let selection: number = Math.floor(Math.random() * 3);
+                        let selection: number = Math.floor(Math.random() * 3); //Change here to reflect how many ASCII art options there are.
                         console.log(`    - Sending Cock #${selection+1}`);
                         item.reply(c.cocks[selection])
                         .then(() => {
@@ -64,6 +99,8 @@ class Bot {
                                 }
                             }
                         });
+                    } else if (send == false){
+                        console.log(`Cannot send to r/${item.subreddit.display_name}`);
                     }
                 }
             });
@@ -74,19 +111,9 @@ class Bot {
         })
     }
 
-    //Creates a post in r/copypasta with the amongus cock
-    public postCock(title: string) {
-        r.submitSelfpost({
-            subredditName: 'copypasta',
-            title: title,
-            text: c.cocks[0]
-        }).then(() => {
-            console.log('Posted');
-        });
-    }
-
 }
 
 
 let cockBot: Bot = new Bot(r);
 cockBot.AutoCocksRoll();
+

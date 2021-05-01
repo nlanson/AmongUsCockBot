@@ -31,8 +31,7 @@ const c: cockList = require("./cocks.json");
 const r: Snoowrap = new Snoowrap(creds);
 //List of subreddits the bot is allowed to post in.
 const allowedSubreddits: Array<string> = [
-    "copypasta",
-    "amogus"
+    "copypasta"
 ];
 
 class Bot {

@@ -2,15 +2,13 @@ version: "3"
 
 services:
   bot:
-    image: nlanson/aucb:test
+    image: nlanson/bot-republic:test
     environment:
       - "username="
       - "password="
       - "userAgent="
       - "clientId="
       - "clientSecret="
-    ports:
-      - "6868:6868"
     container_name: bot
     stdin_open: true
     

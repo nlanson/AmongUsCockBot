@@ -17,10 +17,7 @@
   },
   "homepage": "https://github.com/nlanson/AUCB#readme",
   "dependencies": {
-    "@types/express": "^4.17.11",
     "@types/snoowrap": "^1.19.0",
-    "chalk": "^4.1.1",
-    "express": "^4.17.1",
     "snoostorm": "^1.5.2",
     "snoowrap": "^1.23.0"
   },

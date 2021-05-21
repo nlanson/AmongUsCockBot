@@ -1,24 +1,30 @@
 //Packages
 import Snoowrap from 'snoowrap';
 import { InboxStream } from "snoostorm";
+
+//Internal Packages
 import { botCredentials, cockList } from './bot.interfaces'; 
 
-//Options
-const creds: botCredentials = require("./credentials.json");
-const c: cockList = require("./cocks.json");
-const r: Snoowrap = new Snoowrap(creds);
 
-class Bot {
+export class Bot {
+    credentials: botCredentials;
+    c: cockList;
     bot: Snoowrap;
     startTime: number = Date.now()/1000;
     
-    constructor(r: Snoowrap) {
+    constructor(
+        creds: botCredentials,
+        r: Snoowrap, 
+        c: cockList
+    ) {
+        this.credentials = creds;
+        this.c = c;
         this.bot = r;
     }
 
     //Main CockBot Method
     public async AutoCocksRoll() {
-        console.log(`Starting AmongUsCockBot...`);
+        console.log(`Starting ASCII Bot...`);
         this.newInboxStream();
     }
 
@@ -32,15 +38,16 @@ class Bot {
                 let itemText = item.body.toLowerCase();
                 
                 //On Mention
-                if ( itemText.includes('u/amonguscockbot') ) {
-                    //Time check to not send a cock to every historical mention.
-                    if(item.created_utc >= this.startTime) {
+                if ( itemText.includes('u/'+this.credentials.username.toLowerCase()) ) {
+                    
+                    //Time check and send check
+                    if( item.created_utc >= this.startTime ) { 
                         console.log(`Cock requested on r/${item.subreddit.display_name}`);
                         console.log(`    - ${item.body}`);
                         
-                        let selection: number = Math.floor(Math.random() * 3);
+                        let selection: number = Math.floor(Math.random() * this.c.cocks.length+1); //Change here to reflect how many ASCII art options there are.
                         console.log(`    - Sending Cock #${selection+1}`);
-                        item.reply(c.cocks[selection])
+                        item.reply(this.c.cocks[selection])
                         .then(() => {
                             console.log(`    - Fulfilled`);
                         })
@@ -50,20 +57,22 @@ class Bot {
                             if ( e.error ) {
                                 //Check error reason and send PM if bot is banned from subreddit.
                                 if ( e.error.message == 'Forbidden' ) {
-                                    console.log(`    - Delivery failed as bot is banned from r/${item.subreddit.display_name}. Sending PM instead...`);
+                                    console.log(`    - Delivery failed as bot is banned from r/${item.subreddit.display_name}.`);
                                     //Send PM with Cock.
                                     this.bot.composeMessage({
                                         to: item.author,
                                         subject: "AmongUsCock",
-                                        text: c.cocks[selection]
+                                        text: this.c.cocks[selection]
                                     })
                                     .then(() => console.log(`    - PM Delivered.`))
                                     .catch((e) => console.log(`    - PM Failed.`));
                                 } else {
-                                    console.log(`    - Delivery Failed.`);
+                                    console.log(`    - Delivery Failed due to unforeseen circumstances`);
                                 }
                             }
                         });
+                    } else {
+
                     }
                 }
             });
@@ -74,19 +83,8 @@ class Bot {
         })
     }
 
-    //Creates a post in r/copypasta with the amongus cock
-    public postCock(title: string) {
-        r.submitSelfpost({
-            subredditName: 'copypasta',
-            title: title,
-            text: c.cocks[0]
-        }).then(() => {
-            console.log('Posted');
-        });
-    }
-
 }
 
 
-let cockBot: Bot = new Bot(r);
-cockBot.AutoCocksRoll();
+
+
